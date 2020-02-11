@@ -7,10 +7,13 @@ verify_ssl = true
 pylint = "*"
 
 [packages]
-Django = ">=2.2.9"
-djangorestframework = ">=2.2.0"
+Django = ">=3.0.3"
+djangorestframework = ">=3.11.0"
 django-rest-swagger = ">=2.2.0"
 psycopg2 = "==2.8.4"
+rest-auth = "*"
+django-rest-auth = "==0.9.5"
+djangorestframework-jwt = "==1.11.0" 
 
 [requires]
 python_version = "3.8"
