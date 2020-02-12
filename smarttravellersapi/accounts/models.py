@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
-
 
 class CustomUser(AbstractUser):
     """
@@ -21,8 +19,3 @@ class CustomUser(AbstractUser):
     def __str__(self):
         """Returns a string representation of this `User`."""
         return "{}".format(self.mobile)
-
- 
-
-
-
