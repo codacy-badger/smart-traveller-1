@@ -4,9 +4,12 @@ from accounts.models import CustomUser
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
-    A Serializer for the user model with all required field
+    A Serializer for the user model with all required field.
     """
     class Meta:
+        """
+        Exposes required model fields.
+        """
         model = CustomUser
         fields = ('url', 'mobile','username', 'email', 'first_name', 'last_name', 'created_at', 'updated_at', 'password')
         extra_kwargs = {'password': {'write_only': True}}

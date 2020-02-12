@@ -1,4 +1,3 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
@@ -11,6 +10,7 @@ class CustomUserTests(APITestCase):
         self.data = {'username':'testme',
 	            'mobile':'+256799999999',
 	            'email':'test@test.com',
+                'is_staff': True,
 	            'first_name':'test',
 	            'last_name':'me',
 	            'password':'testme2020'
@@ -22,6 +22,7 @@ class CustomUserTests(APITestCase):
         """
         Ensure we can create a new account object.
         """
+
         response = self.client.post(self.url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CustomUser.objects.get().username, 'testme')
@@ -31,15 +32,16 @@ class CustomUserTests(APITestCase):
         """
         Ensure we can login an account.
         """
-        
+
         self.client.post(self.url, self.data, format='json')
         resp = self.client.post(self.url2, self.data2, format='json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    
+
     def test_update_account(self):
         """
         Ensure we can update a new account object.
         """
+
         self.client.post(self.url, self.data, format='json')
         self.client.post(self.url2, self.data2, format='json')
         data = {'username':'tests',
@@ -57,6 +59,7 @@ class CustomUserTests(APITestCase):
         """
         Ensure we can delete an account object.
         """
+
         self.client.post(self.url, self.data, format='json')
         self.client.post(self.url2, self.data2, format='json')
         link = 'http://127.0.0.1:8000/api/v1/users/3/'
@@ -68,6 +71,7 @@ class CustomUserTests(APITestCase):
         """
         Ensure we can list account objects.
         """
+
         self.client.post(self.url, self.data, format='json')
         self.client.post(self.url2, self.data2, format='json')
         link = 'http://127.0.0.1:8000/api/v1/users/'

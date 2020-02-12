@@ -3,18 +3,22 @@ from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     """
-    A form for registering new users with all required field
+    A form for registering new users with all required field.
     """
     class Meta:
-        """"""
+        """
+        Expose required fields.
+        """
         model = CustomUser
         fields = ('username', 'email', 'firstname', 'lastname')
 
 class CustomUserChangeForm(UserChangeForm):
     """
-    A form for updating users with all required field
+    A form for updating users with all required field.
     """
     class Meta:
-        """"""
+        """
+        Expose required fields.
+        """
         model = CustomUser
         fields = UserChangeForm.Meta.fields
