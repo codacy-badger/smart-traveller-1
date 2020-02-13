@@ -51,7 +51,7 @@ class CustomUserTests(APITestCase):
 	            'last_name':'metest',
 	            'password':'testme2020'
             }
-        url = 'http://127.0.0.1:8000/api/v1/users/5/'
+        url = 'http://127.0.0.1:8000/api/v1/users/15/'
         resp = self.client.patch(url, data=data, format='json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
@@ -62,7 +62,7 @@ class CustomUserTests(APITestCase):
 
         self.client.post(self.url, self.data, format='json')
         self.client.post(self.url2, self.data2, format='json')
-        link = 'http://127.0.0.1:8000/api/v1/users/3/'
+        link = 'http://127.0.0.1:8000/api/v1/users/13/'
         resp = self.client.delete(link)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(CustomUser.objects.count(), 0)
