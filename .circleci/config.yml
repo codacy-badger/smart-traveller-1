@@ -1,0 +1,103 @@
+version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/python:3.8
+    - image: postgres:10.7
+      environment:
+        POSTGRES_USER: smarttravel
+        POSTGRES_DB: smarttravel
+  working_directory: ~/smart-traveller
+
+persist_to_workspace: &persist_to_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/smart-traveller
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.8
+    working_directory: ~/smart-traveller
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *attach_workspace
+      - run:
+          name: Build application
+          command: make build
+
+  run_test:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *attach_workspace
+      - run:
+          name: Wait for postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Testing application
+          command: |
+            cd smarttravellersapi/
+            pipenv install --skip-lock
+            . $(pipenv --venv)/bin/activate
+            pip install psycopg2==2.8.4
+            python manage.py test
+  
+  upload_coverage:
+    <<: *defaults
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Wait for postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Upload coverage
+          command: |
+            cd smarttravellersapi/
+            pipenv install --skip-lock
+            . $(pipenv --venv)/bin/activate
+            pip install psycopg2==2.8.4
+            coverage run manage.py test
+            coverage xml
+            python-codacy-coverage -r coverage.xml
+  
+  deploy:
+    docker:
+      - image: circleci/python:3.8
+    working_directory: ~/smart-traveller
+
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Install Heroku CLI
+          command:  curl https://cli-assets.heroku.com/install.sh | sh
+      - run:
+          name: Deploying App to Heroku
+          command: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git $CIRCLE_BRANCH:master
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - run_test:
+          requires:
+            - build
+      - upload_coverage:
+          requires:
+            - run_test
+      - deploy:
+          requires:
+            - upload_coverage
+          filters:
+            branches:
+              only:
+                - master
+                # - develop
